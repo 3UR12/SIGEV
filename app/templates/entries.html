@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block heading %}Recepción de mercancía{% endblock %}
+{% block page_intro %}Registre recepciones y mantenga actualizadas las existencias{% endblock %}
+{% block content %}
+<div class="two-column">
+<section class="card"><h2>Registrar recepción</h2>
+{% if products %}<form method="post" class="form-grid">
+  <label><span class="field-label">Producto <span class="required" aria-hidden="true">*</span></span><select name="producto_id" required><option value="">Seleccione un producto</option>{% for product in products %}<option value="{{ product['id'] }}">{{ product['codigo'] }} — {{ product['nombre'] }} (existencias actuales: {{ product['stock_actual'] }})</option>{% endfor %}</select></label>
+  <label><span class="field-label">Cantidad recibida <span class="required" aria-hidden="true">*</span></span><input name="cantidad" type="number" min="1" required></label>
+  <label><span class="field-label">Fecha de recepción <span class="required" aria-hidden="true">*</span></span><input name="fecha" type="date" required value="{{ today }}" aria-describedby="entry-date-help"></label>
+  <p class="form-help full" id="entry-date-help">Seleccione la fecha de recepción según la hora local de Panamá.</p>
+  <label class="full"><span class="field-label">Observación <span class="optional">(opcional)</span></span><textarea name="observacion" rows="3" placeholder="Referencia, nota o motivo de la recepción"></textarea></label>
+  <div class="full"><button class="button" type="submit">Registrar recepción</button></div>
+</form>{% else %}<p class="empty">Para registrar una recepción, cree primero un producto activo.</p>{% endif %}</section>
+<section class="card prose"><h2>Actualización de existencias</h2><p>Cada recepción válida incrementa las existencias y genera un movimiento trazable en el inventario.</p></section>
+</div>
+<section class="card table-card"><h2>Recepciones registradas</h2><div class="table-wrap"><table class="responsive-table"><thead><tr><th>Fecha</th><th>Producto</th><th>Cantidad</th><th>Observación</th></tr></thead><tbody>{% for entry in entries %}<tr><td data-label="Fecha">{{ entry['fecha']|date_pa }}</td><td data-label="Producto">{{ entry['codigo'] }} — {{ entry['nombre'] }}</td><td data-label="Cantidad">{{ entry['cantidad'] }}</td><td data-label="Observación">{{ entry['observacion'] or '—' }}</td></tr>{% else %}<tr class="empty-row"><td colspan="4" class="empty"><strong>No hay recepciones registradas.</strong><span>Seleccione un producto y registre la primera recepción de mercancía.</span></td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

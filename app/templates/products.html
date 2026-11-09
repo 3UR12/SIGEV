@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block heading %}Productos{% endblock %}
+{% block page_intro %}Administre el catálogo y sus niveles de reposición{% endblock %}
+{% block content %}
+<div class="two-column">
+  <section class="card">
+    <h2>Crear producto</h2>
+    <p class="muted">Todo producto nuevo se registra con existencias iniciales en 0. Para incrementarlas, registre una recepción de mercancía.</p>
+    <p class="form-help" id="product-form-help"><strong>* Campos obligatorios.</strong> Use Tab para avanzar entre campos; el registro se enviará únicamente al seleccionar «Guardar producto».</p>
+    <form method="post" class="form-grid" data-prevent-enter-submit aria-describedby="product-form-help">
+      <label><span class="field-label">Código del producto <span class="required" aria-hidden="true">*</span></span><input name="codigo" maxlength="50" required placeholder="P-001" aria-required="true"></label>
+      <label><span class="field-label">Nombre del producto <span class="required" aria-hidden="true">*</span></span><input name="nombre" required maxlength="150" placeholder="Resma de papel carta 75 g/m²" aria-required="true"></label>
+      <label><span class="field-label">Precio de venta (B/.) <span class="required" aria-hidden="true">*</span></span><input name="precio" required inputmode="decimal" placeholder="12.50" aria-required="true"></label>
+      <label><span class="field-label">Stock mínimo de reposición <span class="required" aria-hidden="true">*</span></span><input name="stock_minimo" required type="number" min="0" value="0" aria-describedby="minimum-stock-help" aria-required="true"></label>
+      <p class="form-help full" id="minimum-stock-help">Este valor genera alertas de reposición; no modifica las existencias actuales.</p>
+      <label class="full"><span class="field-label">Descripción <span class="optional">(opcional)</span></span><textarea name="descripcion" rows="3"></textarea></label>
+      <label class="check"><input type="checkbox" name="activo" value="1" checked> Producto activo</label>
+      <div class="full"><button class="button" type="submit">Guardar producto</button></div>
+    </form>
+  </section>
+  <section class="card">
+    <h2>Buscar</h2>
+    <form method="get" class="inline-form"><input name="q" value="{{ query }}" placeholder="Código o nombre"><button class="button secondary" type="submit">Buscar</button></form>
+    {% if query %}<p class="muted">Resultados para «{{ query }}». <a href="{{ url_for('main.products') }}">Limpiar búsqueda</a></p>{% endif %}
+  </section>
+</div>
+<section class="card table-card">
+  <h2>Catálogo</h2>
+  <div class="table-wrap"><table class="responsive-table"><thead><tr><th>Código</th><th>Nombre</th><th>Precio</th><th>Existencias actuales</th><th>Stock mínimo de reposición</th><th>Estado</th><th><span class="visually-hidden">Acciones</span></th></tr></thead><tbody>
+  {% for product in products %}<tr><td data-label="Código">{{ product['codigo'] }}</td><td data-label="Nombre">{{ product['nombre'] }}</td><td data-label="Precio" class="money">{{ product['precio_centavos']|money }}</td><td data-label="Existencias actuales">{{ product['stock_actual'] }}</td><td data-label="Mínimo de reposición">{{ product['stock_minimo'] }}</td><td data-label="Estado"><span class="status {{ 'ok' if product['activo'] else 'inactive' }}">{{ 'Activo' if product['activo'] else 'Inactivo' }}</span></td><td data-label="Acción"><a href="{{ url_for('main.edit_product', product_id=product['id']) }}">Editar</a></td></tr>
+  {% else %}<tr class="empty-row"><td colspan="7" class="empty"><strong>El catálogo está vacío.</strong><span>Agregue el primer producto mediante el formulario superior.</span></td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block heading %}Editar producto{% endblock %}
+{% block page_intro %}Actualice la información comercial sin modificar existencias{% endblock %}
+{% block content %}
+<section class="card narrow"><p class="muted">Las existencias actuales ({{ product['stock_actual'] }}) no se editan aquí; se actualizan mediante Recepción de mercancía y Ventas.</p>
+<p class="form-help" id="product-edit-help"><strong>* Campos obligatorios.</strong> Use Tab para avanzar entre campos; los cambios se enviarán únicamente al seleccionar «Guardar cambios».</p>
+<form method="post" class="form-grid" data-prevent-enter-submit aria-describedby="product-edit-help">
+  <label><span class="field-label">Código del producto <span class="required" aria-hidden="true">*</span></span><input name="codigo" required maxlength="50" value="{{ product['codigo'] }}" aria-required="true"></label>
+  <label><span class="field-label">Nombre del producto <span class="required" aria-hidden="true">*</span></span><input name="nombre" required maxlength="150" value="{{ product['nombre'] }}" aria-required="true"></label>
+  <label><span class="field-label">Precio de venta (B/.) <span class="required" aria-hidden="true">*</span></span><input name="precio" required inputmode="decimal" value="{{ '%.2f'|format(product['precio_centavos'] / 100) }}" aria-required="true"></label>
+  <label><span class="field-label">Stock mínimo de reposición <span class="required" aria-hidden="true">*</span></span><input name="stock_minimo" required type="number" min="0" value="{{ product['stock_minimo'] }}" aria-describedby="minimum-stock-help" aria-required="true"></label>
+  <p class="form-help full" id="minimum-stock-help">Este valor genera alertas de reposición; no modifica las existencias actuales.</p>
+  <label class="full"><span class="field-label">Descripción <span class="optional">(opcional)</span></span><textarea name="descripcion" rows="4">{{ product['descripcion'] }}</textarea></label>
+  <label class="check"><input type="checkbox" name="activo" value="1" {{ 'checked' if product['activo'] }}> Producto activo</label>
+  <div class="full action-row"><button class="button" type="submit">Guardar cambios</button><a class="button secondary" href="{{ url_for('main.products') }}">Cancelar</a></div>
+</form></section>
+{% endblock %}

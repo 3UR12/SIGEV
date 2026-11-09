@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es-PA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SIGEV{% endblock %} · SIGEV</title>
+  <meta name="theme-color" content="#344d66">
+  <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='brand-snake.png') }}">
+  <script>document.documentElement.classList.add('js');</script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  {% from '_icons.html' import icon %}
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a class="brand" href="{{ url_for('main.dashboard') }}"><img class="brand-mark" src="{{ url_for('static', filename='brand-snake.png') }}" alt=""><span>SIGEV<small>Inventario y ventas</small></span></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-navigation">
+          {{ icon('menu', 'nav-toggle-icon') }}<span>Menú</span>
+        </button>
+      </div>
+      <nav id="main-navigation" class="sidebar-nav" aria-label="Navegación principal">
+        <a href="{{ url_for('main.dashboard') }}"{% if request.endpoint == 'main.dashboard' %} class="active" aria-current="page"{% endif %}>{{ icon('dashboard', 'nav-icon') }}<span>Panel principal</span></a>
+        <a href="{{ url_for('main.products') }}"{% if request.endpoint in ['main.products', 'main.edit_product'] %} class="active" aria-current="page"{% endif %}>{{ icon('products', 'nav-icon') }}<span>Productos</span></a>
+        <a href="{{ url_for('main.entries') }}"{% if request.endpoint == 'main.entries' %} class="active" aria-current="page"{% endif %}>{{ icon('receipt', 'nav-icon') }}<span>Recepción de mercancía</span></a>
+        <a href="{{ url_for('main.sales') }}"{% if request.endpoint == 'main.sales' %} class="active" aria-current="page"{% endif %}>{{ icon('sales', 'nav-icon') }}<span>Ventas</span></a>
+        <a href="{{ url_for('main.inventory') }}"{% if request.endpoint == 'main.inventory' %} class="active" aria-current="page"{% endif %}>{{ icon('inventory', 'nav-icon') }}<span>Inventario</span></a>
+        <a href="{{ url_for('main.reports') }}"{% if request.endpoint == 'main.reports' %} class="active" aria-current="page"{% endif %}>{{ icon('reports', 'nav-icon') }}<span>Reportes</span></a>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <header class="topbar"><div><p class="eyebrow">Gestión de inventario y ventas</p><h1>{% block heading %}Panel principal{% endblock %}</h1><p class="page-intro">{% block page_intro %}Resumen de inventario y ventas{% endblock %}</p></div></header>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <section class="messages" aria-label="Notificaciones">
+            {% for category, message in messages %}
+              {% if category == 'error' %}
+                <div class="message error" role="alert">{{ message }}</div>
+              {% else %}
+                <div class="message {{ category }}" role="status"{% if category == 'success' %} data-auto-dismiss="6000"{% endif %}>
+                  <span>{{ message }}</span>
+                  <button class="message-close" type="button" aria-label="Cerrar notificación">×</button>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </section>
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='notifications.js') }}"></script>
+  <script src="{{ url_for('static', filename='product-form.js') }}"></script>
+  <script src="{{ url_for('static', filename='sales.js') }}"></script>
+  <script src="{{ url_for('static', filename='navigation.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

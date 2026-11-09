@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% from '_icons.html' import icon %}
+{% block heading %}Panel principal{% endblock %}
+{% block page_intro %}Información actualizada desde las operaciones registradas{% endblock %}
+{% block content %}
+<section class="metric-grid" aria-label="Indicadores comerciales">
+  <article class="metric-card"><span class="metric-icon">{{ icon('products') }}</span><div><span>Productos activos</span><strong>{{ metrics['productos_activos'] }}</strong></div></article>
+  <article class="metric-card"><span class="metric-icon">{{ icon('sales') }}</span><div><span>Ventas de hoy</span><strong>{{ metrics['ventas_hoy'] }}</strong></div></article>
+  <article class="metric-card"><span class="metric-icon">{{ icon('reports') }}</span><div><span>Total vendido hoy</span><strong class="money">{{ metrics['total_hoy']|money }}</strong></div></article>
+  <article class="metric-card alert"><span class="metric-icon">{{ icon('alert') }}</span><div><span>Alertas de reposición</span><strong>{{ metrics['bajo_minimo'] }}</strong></div></article>
+</section>
+
+<section class="quick-actions" aria-labelledby="quick-actions-title">
+  <div class="section-heading"><div><p class="section-kicker">Operaciones habituales</p><h2 id="quick-actions-title">Acciones frecuentes</h2></div></div>
+  <div class="quick-action-grid">
+    <a href="{{ url_for('main.products') }}">{{ icon('products') }}<span><strong>Nuevo producto</strong><small>Agregar al catálogo</small></span>{{ icon('arrow', 'arrow-icon') }}</a>
+    <a href="{{ url_for('main.entries') }}">{{ icon('receipt') }}<span><strong>Recibir mercancía</strong><small>Incrementar existencias</small></span>{{ icon('arrow', 'arrow-icon') }}</a>
+    <a href="{{ url_for('main.sales') }}">{{ icon('sales') }}<span><strong>Registrar venta</strong><small>Agregar productos y confirmar</small></span>{{ icon('arrow', 'arrow-icon') }}</a>
+    <a href="{{ url_for('main.reports') }}">{{ icon('reports') }}<span><strong>Consultar reportes</strong><small>Revisar ventas e inventario</small></span>{{ icon('arrow', 'arrow-icon') }}</a>
+  </div>
+</section>
+
+<div class="dashboard-grid">
+  <section class="card table-card dashboard-card">
+    <div class="card-heading"><div><p class="section-kicker">Actividad comercial</p><h2>Últimas ventas confirmadas</h2></div><a href="{{ url_for('main.reports') }}">Ver reportes</a></div>
+    {% if latest_sales %}<div class="table-wrap"><table class="responsive-table"><thead><tr><th>Código</th><th>Fecha</th><th>Total</th></tr></thead><tbody>
+      {% for sale in latest_sales %}<tr><td data-label="Código">{{ sale['identificador_operacion'] }}</td><td data-label="Fecha">{{ sale['fecha']|date_pa }}</td><td data-label="Total" class="money">{{ sale['total_centavos']|money }}</td></tr>{% endfor %}
+    </tbody></table></div>{% else %}<div class="empty-state">{{ icon('sales') }}<h3>Aún no hay ventas</h3><p>Cuando confirme una venta, aparecerá aquí.</p><a href="{{ url_for('main.sales') }}">Registrar la primera venta</a></div>{% endif %}
+  </section>
+
+  <section class="card dashboard-card">
+    <div class="card-heading"><div><p class="section-kicker">Control de inventario</p><h2>Requieren reposición</h2></div><a href="{{ url_for('main.inventory') }}">Ver inventario</a></div>
+    {% if replenishment %}<ul class="status-list">
+      {% for product in replenishment %}<li><div><strong>{{ product['codigo'] }} · {{ product['nombre'] }}</strong><span>{{ product['stock_actual'] }} actuales · mínimo {{ product['stock_minimo'] }}</span></div><span class="status {{ 'warning' if product['nivel_reposicion'] == 'POR_DEBAJO' else 'minimum' }}">{{ 'Por debajo' if product['nivel_reposicion'] == 'POR_DEBAJO' else 'En el mínimo' }}</span></li>{% endfor %}
+    </ul>{% else %}<div class="empty-state compact">{{ icon('inventory') }}<h3>Existencias dentro de los niveles</h3><p>No hay productos activos en el mínimo ni por debajo de este.</p></div>{% endif %}
+  </section>
+</div>
+
+<section class="card table-card dashboard-card">
+  <div class="card-heading"><div><p class="section-kicker">Trazabilidad</p><h2>Movimientos recientes</h2></div><a href="{{ url_for('main.inventory') }}">Ver todos</a></div>
+  {% if recent_movements %}<div class="table-wrap"><table class="responsive-table"><thead><tr><th>Fecha</th><th>Producto</th><th>Movimiento</th><th>Cantidad</th><th>Existencias resultantes</th></tr></thead><tbody>
+    {% for movement in recent_movements %}<tr><td data-label="Fecha">{{ movement['fecha']|date_pa }}</td><td data-label="Producto">{{ movement['codigo'] }} · {{ movement['nombre'] }}</td><td data-label="Movimiento">{{ 'Entrada de mercancía' if movement['tipo'] == 'ENTRADA' else 'Salida por venta' }}</td><td data-label="Cantidad">{{ movement['cantidad'] }}</td><td data-label="Existencias resultantes">{{ movement['stock_resultante'] }}</td></tr>{% endfor %}
+  </tbody></table></div>{% else %}<div class="empty-state compact">{{ icon('movement') }}<h3>Sin movimientos registrados</h3><p>Las recepciones y ventas generarán el historial automáticamente.</p></div>{% endif %}
+</section>
+{% endblock %}

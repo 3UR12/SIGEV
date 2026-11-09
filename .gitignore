@@ -1,0 +1,19 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest-tmp/
+.audit/
+instance/
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+.coverage
+htmlcov/
+# Documentos academicos y materiales internos no pertenecen al codigo.
+docs/
+AGENTS.md
+*.docx
+*.pdf
+*.zip
