@@ -102,3 +102,5 @@ Las bases dentro de `instance/` y el entorno `.venv/` no se publican en Git.
 ## Seguridad y alcance
 
 SIGEV está destinado a **ejecución local** en `127.0.0.1`. La versión actual no implementa autenticación, roles, protección CSRF ni despliegue HTTPS. **No debe exponerse a Internet ni utilizarse como servicio compartido** sin incorporar y comprobar esos controles. No subas bases con datos reales, credenciales ni información personal al repositorio.
+
+Al tratarse de bases de datos locales (.sqlite3), se aconseja automatizar copias de seguridad cifradas periódicas y evitar almacenar cadenas de conexión o configuraciones sensibles en texto plano dentro del código fuente mediante el uso de variables de entorno seguras (.env).
